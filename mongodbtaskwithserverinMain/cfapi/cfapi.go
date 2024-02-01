@@ -19,7 +19,6 @@ func NewCodeforcesClient() *CodeforcesClient {
 	}
 }
 
-
 func (c *CodeforcesClient) FetchRecentActions() (*models.Result, error) {
 
 	response, err := http.Get("https://codeforces.com/api/recentActions?maxCount=30")

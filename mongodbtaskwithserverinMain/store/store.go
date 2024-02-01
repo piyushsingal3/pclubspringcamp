@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -26,7 +25,7 @@ func (m *MongoStore) OpenConnectionWithMongoDB(connectionString, databaseName st
 	if err != nil {
 		return fmt.Errorf("failed to connect to MongoDB: %v", err)
 	}
-
+	fmt.Print("Connection Establ")
 	err = client.Ping(context.TODO(), nil)
 	if err != nil {
 		return fmt.Errorf("failed to ping MongoDB: %v", err)
@@ -58,23 +57,15 @@ func (m *MongoStore) StoreRecentActionsInTheDatabase(actions []models.RecentActi
 func (m *MongoStore) QueryRecentActions() ([]models.RecentActions, error) {
 	var actions []models.RecentActions
 
-	cursor, err := m.RecentActionsCollection.Find(context.TODO(), bson.D{})
+	cursor, err := m.RecentActionsCollection.Find(context.TODO(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query recentActions from the database: %v", err)
 	}
 	defer cursor.Close(context.TODO())
-	log.Printf("Number of documents returned by the cursor: %d", cursor.RemainingBatchLength())
 
-	for cursor.Next(context.Background()) {
-		var action models.RecentActions
-		if err := cursor.Decode(&action); err != nil {
-			return nil, fmt.Errorf("failed to decode recentActions document: %v", err)
-		}
-		actions = append(actions, action)
-	}
-
-	if err := cursor.Err(); err != nil {
-		return nil, fmt.Errorf("cursor error while querying recentActions from the database: %v", err)
+	err = cursor.All(context.TODO(), &actions)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode recentActions documents: %v", err)
 	}
 
 	return actions, nil
