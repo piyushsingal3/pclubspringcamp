@@ -13,13 +13,14 @@ type CodeforcesClient struct {
 	client *http.Client
 }
 
+// Creates a new codeforces client
 func NewCodeforcesClient() *CodeforcesClient {
 	return &CodeforcesClient{
 		client: http.DefaultClient,
 	}
 }
 
-
+// fetch Data from codeforces api
 func (c *CodeforcesClient) FetchRecentActions() (*models.Result, error) {
 
 	response, err := http.Get("https://codeforces.com/api/recentActions?maxCount=30")

@@ -63,7 +63,6 @@ func (m *MongoStore) QueryRecentActions() ([]models.RecentActions, error) {
 		return nil, fmt.Errorf("failed to query recentActions from the database: %v", err)
 	}
 	defer cursor.Close(context.TODO())
-	log.Printf("Number of documents returned by the cursor: %d", cursor.RemainingBatchLength())
 
 	for cursor.Next(context.Background()) {
 		var action models.RecentActions
